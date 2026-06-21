@@ -381,5 +381,5 @@ For services that were built and pushed (api-service, ai-scanner, dashboard, etc
 - Closing a ticket before live verification passes.
 - Skipping Linear ticket creation because "it's a small change" — every meaningful change gets a ticket.
 - Reusing a `Done` ticket for new work — file a new linked ticket via `relatedTo`.
-- Hardcoding `TestPass123` or any password in any commit, comment, ticket body, audit report, skill, or agent file (BSO-SEC-048 precedent).
+- Hardcoding any test-account password literal in any commit, comment, ticket body, audit report, skill, or agent file (BSO-SEC-048 + BSO-SEC-056 precedent).
 - Mentioning Claude / Claude Code / Anthropic in any commit, PR, ticket, or comment.

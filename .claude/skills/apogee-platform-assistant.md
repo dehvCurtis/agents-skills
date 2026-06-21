@@ -8,7 +8,7 @@ user_invocable: true
 
 ## 1. Platform Overview
 
-Apogee is a multi-tenant DevSecOps SaaS platform for smart-contract security — Solidity, Vyper, Move, and Rust — running 17+ SAST scanners plus an LLM-powered AI scanner in GCP GKE (prod). Phase 10 (BYO AI Scanning, managed-Claude provider) shipped to production on 2026-06-20 using `claude-sonnet-4-6` via the Apogee-owned key; Phase 2 (BYO Anthropic / OpenAI / Gemini live wiring) is deferred until a customer requests it. Production is at `https://app.0xapogee.com`. The owner's authorized test account is `jasonbrailowbizop@mail.com`; the password is `TestPass123` and is session-only — never persist it (per `feedback_trigger_scans_via_api.md`). There is standing authorization to call the Apogee API directly to trigger verification scans as that account. The database name is `solidity_security`; the platform name is Apogee (not BlockSecOps, not ABS — those are legacy). Repo names keep the `blocksecops-*` prefix; that is intentional and must not be changed.
+Apogee is a multi-tenant DevSecOps SaaS platform for smart-contract security — Solidity, Vyper, Move, and Rust — running 17+ SAST scanners plus an LLM-powered AI scanner in GCP GKE (prod). Phase 10 (BYO AI Scanning, managed-Claude provider) shipped to production on 2026-06-20 using `claude-sonnet-4-6` via the Apogee-owned key; Phase 2 (BYO Anthropic / OpenAI / Gemini live wiring) is deferred until a customer requests it. Production is at `https://app.0xapogee.com`. The owner's authorized test account is `jasonbrailowbizop@mail.com`; the password is held in `$TEST_PASSWORD` (session-only env var) — never persist it (per `feedback_trigger_scans_via_api.md`). There is standing authorization to call the Apogee API directly to trigger verification scans as that account. The database name is `solidity_security`; the platform name is Apogee (not BlockSecOps, not ABS — those are legacy). Repo names keep the `blocksecops-*` prefix; that is intentional and must not be changed.
 
 ---
 
@@ -179,7 +179,7 @@ SUPABASE_ANON=$(kubectl get secret api-service-secret -n api-service-prod -o jso
 TOKEN=$(curl -sX POST "https://huzjlpypdlelqnbjvxad.supabase.co/auth/v1/token?grant_type=password" \
   -H "Content-Type: application/json" \
   -H "apikey: $SUPABASE_ANON" \
-  -d '{"email":"jasonbrailowbizop@mail.com","password":"TestPass123"}' | jq -r '.access_token')
+  -d "{\"email\":\"jasonbrailowbizop@mail.com\",\"password\":\"$TEST_PASSWORD\"}" | jq -r '.access_token')
 
 # Open a prod DB shell (in-cluster, not port-forward)
 kubectl exec postgresql-0 -n postgresql-prod -- psql -U blocksecops -d solidity_security
