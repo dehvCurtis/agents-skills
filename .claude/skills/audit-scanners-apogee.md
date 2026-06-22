@@ -1,5 +1,5 @@
 ---
-name: audit-apogee
+name: audit-scanners-apogee
 description: Full scanner-matrix reaudit for the Apogee platform — API-driven end-user scans as the standing test account against the last-known-good baseline contracts, with detector-firing verification, double-check before declaring drift, Linear ticket-filing, and complete documentation update. Use when the owner asks to test/reaudit/verify all scanners (SAST + AI).
 metadata:
   type: skill
