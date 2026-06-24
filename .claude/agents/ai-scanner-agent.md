@@ -75,15 +75,19 @@ tests/unit/ — 76+ tests; pure-Python; mock anthropic SDK at adapter boundary
 9. **Logging extras cannot use `message` as a key** — it's a reserved `LogRecord` attribute in Python 3.13. Use `failure_message` / `event_message` etc. (BSO-BUG-001).
 10. **Cloudflare 100s edge timeout** means synchronous AI dispatch from api-service 504s — use fire-and-forget `asyncio.create_task`, dashboard polls scan status (matches SAST UX).
 11. **Build from a `git worktree`** to prevent in-progress edits in adjacent chats from polluting Docker build context (4 image tags burned during Phase 1 from this).
+12. **Multi-file contract source** (Hardhat / Foundry / Truffle) — `contract.source_code` is empty when `is_multi_file=true`; source lives in `contract_files` rows. The orchestrator (v0.2.7+) handles this: queries `contract_files` for `file_path ILIKE '%.sol'` ordered by `is_main_file DESC, file_path ASC`, fences each file with its real path, builds `allowed_files` per file. Use bind-param `:cid` (no f-string SQL). Live precedent: end-user failed scan `369548e9` on contract `0d0c1935` (hardhat-echidna) → v0.2.7 fix verified by scan `daee7c9d`.
+13. **Implicit sub-processor consent (post-v0.55.4 dashboard)** — dashboard always sends `ai_sensitivity_acknowledged: true` when AI scanner is selected. ToS covers the sub-processor relationship; per-scan checkboxes are not the SaaS norm. Backend gate (BSO-SEC-031) still rejects `false` as defense in depth — keep it intact. Never re-add a per-scan UI consent prompt.
+14. **Never hardcode scanner/model/provider lists in dashboard or callers** — backend `/api/v1/scanners` is the catalog source of truth. Owner directive after BatchScanModal had a hardcoded `AVAILABLE_SCANNERS` that omitted ai-anthropic entirely. Always read via `useQuery(['scanners'], listScanners)`.
 
-## Production state (as of 2026-06-20)
+## Production state (as of 2026-06-21)
 
-- Image: `us-west1-docker.pkg.dev/project-8a2657b9-d96c-4c0a-a69/apogee/ai-scanner:0.2.5`
+- Image: `us-west1-docker.pkg.dev/project-8a2657b9-d96c-4c0a-a69/apogee/ai-scanner:0.2.7`
 - Pinned base: `python:3.13-slim@sha256:f50f56f1471fc430b394ee75fc826be2d212e35d85ed1171ac79abbba485dce9`
 - GSA: `apogee-ai-scanner@project-8a2657b9-d96c-4c0a-a69.iam.gserviceaccount.com`
 - KSA → GSA via Workload Identity: `ai-scanner-prod/ai-scanner`
-- Live e2e proof: scan `f0d08e6a-0c58-4387-a531-f769e878d175` → 9 findings in ~24s for ~$0.054 (5150 in / 2563 out tokens, claude-sonnet-4-6)
+- Live e2e proof: scan `3622a074-9b56-4031-a314-a8f14ed648b4` (end-user-triggered 2026-06-21) → 7 findings in ~30s for ~$0.047 (5150 in / 2133 out tokens, claude-sonnet-4-6). Multi-file e2e: scan `daee7c9d-6388-4cf2-8d2e-c7bcc72ee1c5` on hardhat-echidna `0d0c1935`.
 - Phase 10 plan: `~/Git/TaskDocs-BlockSecOps/phases/10-phase-10-byo-ai-scanning/`
+- Latest BSO-SEC finding ID: 055 (continue sequence from there on new audits)
 - Phase 1 audit: `~/Git/docs/audit/AUDIT-2026-06-20-PHASE-10-AI-SCANNING.md`
 
 ## Standards you follow

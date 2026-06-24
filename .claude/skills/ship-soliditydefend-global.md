@@ -34,19 +34,23 @@ The user may pass an optional argument describing what's being shipped (e.g., `/
 - Follow semver: patch for fixes, minor for new features/detectors, major for breaking changes.
 - Ask the user to confirm the new version number before proceeding.
 
-### 1b. Update `docs/CHANGELOG.md` in SolidityDefend
+### 1b. If any detectors were removed, update `docs/REMOVED_DETECTORS.md`
+
+Add an entry for each removed detector with: detector ID, filename, version removed, and reason. This prevents rebuilding the same detector twice.
+
+### 1c. Update `docs/CHANGELOG.md` in SolidityDefend
 
 - Add a new version entry (or update the current one) at the top of the changelog.
 - Follow the existing Keep a Changelog format with `### Fixed`, `### Added`, `### Changed` sections.
 - Summarize every change being shipped with enough detail for users to understand impact.
 
-### 1c. Update any other docs in `docs/` that are affected
+### 1d. Update any other docs in `docs/` that are affected
 
 - If detectors were added/changed, update `docs/DETECTOR-TYPES.md` if it lists detector counts or capabilities.
 - If CLI behavior changed, update `docs/CLI.md` or `docs/USAGE.md`.
 - If validation/testing changed, update `docs/VALIDATION.md` or `docs/TESTING.md`.
 
-### 1d. Update TaskDocs-SolidityDefend
+### 1e. Update TaskDocs-SolidityDefend
 
 - Update `/home/pwner/Git/TaskDocs-SolidityDefend/current-task.md` with the current work status.
 - If new FP analysis was done, add results under `fp-testing/results/`.
@@ -90,13 +94,20 @@ grep -rn "unsafe " crates/ --include="*.rs" | grep -v "// SAFETY:" | head -20
 
 Any new `unsafe` blocks without `// SAFETY:` comments must be reviewed.
 
-### 2e. Verify detector count is stable
+### 2e. Verify detector registration integrity
 
+```bash
+cargo test -p detectors --lib registry 2>&1 | tail -5
+```
+
+This runs 3 checks: count >= baseline, all detectors have valid IDs/names/descriptions, no duplicate IDs. Must be 0 failures.
+
+Also verify the binary count matches `docs/baseline/README.md`:
 ```bash
 ./target/release/soliditydefend --list-detectors 2>&1 | grep -cE '^\s+[a-z]'
 ```
 
-Compare against the count documented in `docs/baseline/README.md`. Report if changed and update the baseline if the change is intentional.
+Report if changed and update the baseline if the change is intentional.
 
 ---
 
@@ -236,59 +247,39 @@ Report the final state: branch, latest commits, version.
 
 ---
 
-## Phase 5: Build and Release
+## Phase 5: Tag and Release
 
 Only proceed after Phase 4 merges are complete and main is up to date.
 
-### 5a. Build release binaries
+GitHub Actions (`.github/workflows/release.yml`) handles building and releasing automatically when a tag is pushed. It builds for 5 targets (Linux x86_64, Linux aarch64, macOS aarch64, macOS x86_64, Windows x86_64), generates SHA256 checksums, and creates the GitHub release with all binaries. Do NOT create a release manually.
+
+### 5a. Create and push git tag
 
 ```bash
 cd /home/pwner/Git/SolidityDefend && git checkout main && git pull origin main
-cargo build --release 2>&1
-```
-
-Verify the binary version matches the version bumped in Phase 1a:
-```bash
-./target/release/soliditydefend --version
-```
-
-### 5b. Create git tag
-
-```bash
 git tag v<version>
 git push origin v<version>
 ```
 
-Tag must match the version in `Cargo.toml` (e.g., `v2.0.11`). Ask the user to confirm before pushing the tag.
+Tag must match the version in `Cargo.toml`. Ask the user to confirm before pushing the tag.
 
-### 5c. Create GitHub release
+### 5b. Verify CI release
 
-```bash
-gh release create v<version> \
-  --title "v<version>" \
-  --notes-file docs/CHANGELOG.md \
-  ./target/release/soliditydefend
-```
-
-- Use the changelog entry for this version as the release notes body.
-- Upload the release binary (`target/release/soliditydefend`).
-- If cross-platform builds are needed, build and upload each separately.
-
-Ask the user to confirm before creating the release.
-
-### 5d. Verify release
+Wait for the GitHub Actions release workflow to complete, then verify:
 
 ```bash
+gh run list --workflow=release.yml --limit 1
 gh release view v<version>
 ```
 
 Confirm:
+- CI workflow succeeded
 - Release is published (not draft)
-- Binary is attached
-- Release notes are correct
-- Tag points to the correct merge commit
+- All 5 platform binaries are attached
+- SHA256SUMS.txt is attached
+- Release notes were extracted from `docs/CHANGELOG.md`
 
-Report the release URL to the user.
+Report the release URL to the user. If CI failed, investigate with `gh run view <run-id> --log-failed`.
 
 ---
 

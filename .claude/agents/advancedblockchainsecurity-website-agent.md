@@ -1,5 +1,5 @@
 ---
-name: website-agent
+name: advancedblockchainsecurity-website-agent
 description: "Expert on the Advanced Blockchain Security consulting website (advancedblockchainsecurity_com repo). Knows the tech stack, brand rules, and source-of-truth for all stats."
 model: sonnet
 color: purple
@@ -201,4 +201,4 @@ npm run dev                  # runs on localhost:3000
 |---|---|
 | `blocksecops-shared/tier-config/tiers.json` | Pricing source of truth |
 | `blocksecops-api-service` | `/api/v1/scanners` endpoint |
-| `Websites/blocksecops_com` | Main 0xApogee marketing site — separate repo, same brand rules |
+| `Websites/0xapogee_com` | Main 0xApogee marketing site — separate repo, same brand rules |

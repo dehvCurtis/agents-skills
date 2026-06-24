@@ -1,5 +1,5 @@
 ---
-name: ship
+name: soliditybom-ship
 description: Full shipping pipeline — version bump, update docs, security checks, tests, commit, PR, merge, tag, release, and verify for SolidityBOM.
 user_invocable: true
 ---

@@ -1,5 +1,5 @@
 ---
-name: ship
+name: soliditydefend-ship
 description: Full shipping pipeline — version bump, update docs, security checks, FP checks, commit, PR, merge, build, release, and verify. Handles both SolidityDefend and TaskDocs-SolidityDefend repos.
 user_invocable: true
 ---

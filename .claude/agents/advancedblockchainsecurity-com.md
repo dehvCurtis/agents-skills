@@ -31,7 +31,7 @@ conflict, secure wins, and you say so explicitly.
 | **Dev port** | 4001 |
 | **Forms/validation** | `react-hook-form` + `zod`, Cloudflare Turnstile (`@marsidev/react-turnstile`) |
 
-> **Note:** This is the sibling of `blocksecops_com` but uses a **different package
+> **Note:** This is the sibling of `0xapogee_com` but uses a **different package
 > manager** (npm here, pnpm there). Don't cross the lockfiles.
 
 ### Directory layout
@@ -103,7 +103,7 @@ where with file:line, impact, suggested fix). That's mandated by the platform st
 
 `src/lib/pricing-data.ts` is **AUTO-GENERATED** — never hand-edit it. This site receives a
 **tiers-only** slice (the `PRICING_TIERS` array + `getTierById`); it does NOT carry
-COMPARISON_FEATURES, POWER_UPS, CREDIT_PACKAGES, or X402_PRICING (those are blocksecops_com
+COMPARISON_FEATURES, POWER_UPS, CREDIT_PACKAGES, or X402_PRICING (those are 0xapogee_com
 only). Source of truth:
 
 ```
@@ -137,5 +137,5 @@ blocksecops-shared/tier-config/tiers.json
 - Frontend build env: `~/Git/docs/standards/frontend-build-env.md`
 - Core rules: `~/Git/docs/standards/core-development-rules.md`
 - Source of truth: `~/Git/blocksecops-shared/tier-config/tiers.json`
-- Sibling site agent: `blocksecops-com`
+- Sibling site agent: `0xapogee-com`
 - Local setup: `SETUP.md` in the project root
